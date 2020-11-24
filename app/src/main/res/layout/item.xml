@@ -13,11 +13,11 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="60dp"
         android:padding="10dp">
 
         <TextView
-            android:id="@+id/shoppingListTitle"
+            android:id="@+id/itemTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -27,22 +27,34 @@
             android:layout_marginLeft="0dp"
             android:layout_marginTop="0dp"
             android:text="Title"
-            android:textSize="24sp" />
+            android:textSize="14sp" />
 
         <ImageView
             android:id="@+id/imageView6"
-            android:layout_width="22dp"
-            android:layout_height="23dp"
-            android:layout_alignParentTop="true"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="0dp"
+            android:layout_alignParentBottom="true"
             android:layout_marginEnd="0dp"
             android:layout_marginRight="0dp"
+            android:layout_marginBottom="0dp"
             app:srcCompat="@drawable/baseline_delete_black_18dp" />
 
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="0dp"
+            app:srcCompat="@drawable/baseline_edit_black_18dp" />
+
         <TextView
-            android:id="@+id/date"
+            android:id="@+id/price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -51,19 +63,22 @@
             android:layout_marginStart="0dp"
             android:layout_marginLeft="0dp"
             android:layout_marginBottom="0dp"
-            android:text="12/12/20" />
+            android:text="Cost: "
+            android:textSize="12sp" />
 
         <TextView
-            android:id="@+id/total"
+            android:id="@+id/roommate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="0dp"
-            android:text="Total: " />
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="70dp"
+            android:layout_marginRight="70dp"
+            android:text="Roommate: Kevin"
+            android:textSize="12sp" />
+
     </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView>

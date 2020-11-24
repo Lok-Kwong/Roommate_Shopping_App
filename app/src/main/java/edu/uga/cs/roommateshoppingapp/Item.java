@@ -1,22 +1,24 @@
 package edu.uga.cs.roommateshoppingapp;
 
-public class Items {
+public class Item {
 
     public String name;
     public double cost;
     public boolean purchased;
+    public int quantity;
 
-    public Items() {
+    public Item() {
         this.name = null;
         this.cost = 0.00;
         this.purchased = false;
-
+        this.quantity = 0;
     }
 
-    public Items(String name, float cost, boolean purchased) {
+    public Item(String name, float cost, boolean purchased, int quantity) {
         this.name = name;
         this.cost = cost;
         this.purchased = purchased;
+        this.quantity = quantity;
     }
 
     public String getName() {
@@ -41,5 +43,13 @@ public class Items {
 
     public void setPurchased(boolean purchased) {
         this.purchased = purchased;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

@@ -1,6 +1,5 @@
 package edu.uga.cs.roommateshoppingapp;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,7 +56,7 @@ public class ShoppingListActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_shopping_list);
 
-        recyclerView = (RecyclerView) findViewById( R.id.recyclerView );
+        recyclerView = (RecyclerView) findViewById( R.id.recyclerView);
 
         // use a linear layout manager for the recycler view
         layoutManager = new LinearLayoutManager(this );
@@ -140,6 +141,10 @@ public class ShoppingListActivity extends AppCompatActivity {
     public void addShoppingList() {
         Log.d(DEBUG_TAG, "Adding shopping list");
         String ShoppingListName = listNameView.getText().toString();
+        if (TextUtils.isEmpty(ShoppingListName)) {
+            listNameView.setError("Required");
+            return;
+        }
         String currentDate = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()).format(new Date());
 
         final ShoppingList shoppingList = new ShoppingList( ShoppingListName, currentDate, 0.00 );
@@ -191,6 +196,8 @@ public class ShoppingListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int i = item.getItemId();
         if (i == R.id.action_logout) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            Log.d(DEBUG_TAG, "Signing out: " + user.getDisplayName());
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(this, LoginActivity.class));
             finish();

@@ -7,7 +7,7 @@ public class ShoppingList {
     public String shoppingListName;
     public String date;
     public double total;
-    public ArrayList<Items> items;
+    public ArrayList<Item> items;
 
     public ShoppingList() {
         this.shoppingListName = null;
@@ -47,11 +47,11 @@ public class ShoppingList {
         this.total = total;
     }
 
-    public ArrayList<Items> getItems() {
+    public ArrayList<Item> getItems() {
         return items;
     }
 
-    public void addItem(Items item) {
+    public void addItem(Item item) {
         this.items.add(item);
     }
 

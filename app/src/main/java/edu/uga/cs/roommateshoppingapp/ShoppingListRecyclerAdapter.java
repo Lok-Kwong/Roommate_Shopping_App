@@ -1,7 +1,9 @@
 package edu.uga.cs.roommateshoppingapp;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -26,7 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
 /**
- * This is an adapter class for the RecyclerView to show all job leads.
+ * This is an adapter class for the RecyclerView to show all Shopping Lists.
  */
 public class ShoppingListRecyclerAdapter extends RecyclerView.Adapter<ShoppingListRecyclerAdapter.ShoppingListHolder> {
 
@@ -47,19 +48,24 @@ public class ShoppingListRecyclerAdapter extends RecyclerView.Adapter<ShoppingLi
         TextView total;
         ImageView delete;
         MaterialCardView cardView;
+        private final Context context;
 
         public ShoppingListHolder(View itemView) {
             super(itemView);
+            context = itemView.getContext();
 
-            title = (TextView) itemView.findViewById(R.id.shopping_list_title);
+            title = (TextView) itemView.findViewById(R.id.shoppingListTitle);
             date = (TextView) itemView.findViewById(R.id.date);
             total = (TextView) itemView.findViewById(R.id.total);
             delete = (ImageView) itemView.findViewById(R.id.imageView6);
+            // Clicking the cardview starts the items activity
             cardView = (MaterialCardView) itemView.findViewById(R.id.shoppingCard);
             cardView.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-//                    cardView.setChecked(!cardView.isChecked());
-                    // Pass in shopping List at shoppingLists.get(getAdapterPosition());
+                    Intent intent = new Intent( context, ItemsActivity.class );
+                    intent.putExtra("Title", shoppingLists.get(getAdapterPosition()).getShoppingListName());
+                    context.startActivity( intent );
+
                     // Add items, add to total
                     // Update database with the query?
                     // Get items by putting snapshot into item class and add into shoppingList.get()

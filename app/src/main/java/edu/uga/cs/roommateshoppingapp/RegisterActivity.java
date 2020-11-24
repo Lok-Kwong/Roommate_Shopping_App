@@ -71,7 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 Log.d( DEBUG_TAG, "createUserWithEmail: success" );
 
                                 // Set display name
-                                FirebaseUser user = mAuth.getCurrentUser();
+                                final FirebaseUser user = mAuth.getCurrentUser();
                                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                         .setDisplayName(nameEditText.getText().toString())
                                         .build();
@@ -81,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
-                                                    Log.d(DEBUG_TAG, "User profile updated.");
+                                                    Log.d(DEBUG_TAG, "User profile " + user.getDisplayName() + " updated");
                                                 }
                                             }
                                         });
