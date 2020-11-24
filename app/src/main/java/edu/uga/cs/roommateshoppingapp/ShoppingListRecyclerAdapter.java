@@ -1,0 +1,160 @@
+package edu.uga.cs.roommateshoppingapp;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.List;
+
+/**
+ * This is an adapter class for the RecyclerView to show all job leads.
+ */
+public class ShoppingListRecyclerAdapter extends RecyclerView.Adapter<ShoppingListRecyclerAdapter.ShoppingListHolder> {
+
+    public static final String DEBUG_TAG = "ShopListRecyclerAdapter";
+
+    private List<ShoppingList> shoppingLists;
+
+
+    public ShoppingListRecyclerAdapter(List<ShoppingList> shoppingLists) {
+        this.shoppingLists = shoppingLists;
+    }
+
+    // The adapter must have a ViewHolder class to "hold" one item to show.
+    class ShoppingListHolder extends RecyclerView.ViewHolder {
+
+        TextView title;
+        TextView date;
+        TextView total;
+        ImageView delete;
+        MaterialCardView cardView;
+
+        public ShoppingListHolder(View itemView) {
+            super(itemView);
+
+            title = (TextView) itemView.findViewById(R.id.shopping_list_title);
+            date = (TextView) itemView.findViewById(R.id.date);
+            total = (TextView) itemView.findViewById(R.id.total);
+            delete = (ImageView) itemView.findViewById(R.id.imageView6);
+            cardView = (MaterialCardView) itemView.findViewById(R.id.shoppingCard);
+            cardView.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+//                    cardView.setChecked(!cardView.isChecked());
+                    // Pass in shopping List at shoppingLists.get(getAdapterPosition());
+                    // Add items, add to total
+                    // Update database with the query?
+                    // Get items by putting snapshot into item class and add into shoppingList.get()
+                }
+            });
+
+            delete.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+
+                    builder.setMessage("Are you sure you want to delete this?")
+                            .setTitle("Delete a Shopping List");
+
+                    builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User DELETES shopping list
+                            deleteShoppingList();
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
+        }
+
+        public void deleteShoppingList() {
+            // query the database to determine the key and remove from firebase database
+            final String shoppingTitle = title.getText().toString();
+            DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
+            Query query = myRef.child("ShoppingLists").orderByChild("shoppingListName").equalTo(shoppingTitle);
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                        Log.d(DEBUG_TAG, "deleteShoppingList: in OnDataChange");
+                        postSnapshot.getRef().removeValue()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // Show a quick confirmation
+                                        Log.d(DEBUG_TAG, "deleteShoppingList: deleted " + getAdapterPosition());
+                                        Toast.makeText(itemView.getContext(), "Deleted " + shoppingTitle, Toast.LENGTH_SHORT).show();
+                                        // Hacky solution to dynamically remove cardview in the ShoppingList Activity
+                                        ShoppingListActivity.shoppingLists.remove(getAdapterPosition()); // Remove from shopping list
+                                        ShoppingListActivity.recyclerAdapter.notifyItemRemoved(getAdapterPosition()); // Notify recycle adapter
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(Exception e) {
+                                        Log.d(DEBUG_TAG, "deleteShoppingList: cant delete");
+                                        Toast.makeText(itemView.getContext(), "Failed to delete " + shoppingTitle, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e(DEBUG_TAG, "onCancelled", databaseError.toException());
+                }
+            });
+        }
+
+
+    }
+
+    @Override
+    public ShoppingListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.shopping_list, parent, false);
+        return new ShoppingListHolder(view);
+    }
+
+    // This method fills in the values of the Views to show a Shopping List
+    @Override
+    public void onBindViewHolder(ShoppingListHolder holder, int position) {
+        ShoppingList shoppingList = shoppingLists.get(position);
+
+        Log.d(DEBUG_TAG, "onBindViewHolder: " + shoppingList);
+
+        holder.title.setText(String.valueOf(shoppingList.getShoppingListName()));
+        holder.date.setText(String.valueOf(shoppingList.getDate()));
+        holder.total.setText(String.valueOf(shoppingList.getTotal()));
+    }
+
+    @Override
+    public int getItemCount() {
+        return shoppingLists.size();
+    }
+
+
+}
