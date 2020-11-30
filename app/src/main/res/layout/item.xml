@@ -13,7 +13,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="80dp"
         android:padding="10dp">
 
         <TextView
@@ -27,10 +27,10 @@
             android:layout_marginLeft="0dp"
             android:layout_marginTop="0dp"
             android:text="Title"
-            android:textSize="14sp" />
+            android:textSize="18sp" />
 
         <ImageView
-            android:id="@+id/imageView6"
+            android:id="@+id/deleteBtn"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_alignParentEnd="true"
@@ -42,7 +42,7 @@
             app:srcCompat="@drawable/baseline_delete_black_18dp" />
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/editImg"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_alignParentEnd="true"
@@ -64,7 +64,7 @@
             android:layout_marginLeft="0dp"
             android:layout_marginBottom="0dp"
             android:text="Cost: "
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/roommate"
@@ -77,7 +77,7 @@
             android:layout_marginEnd="70dp"
             android:layout_marginRight="70dp"
             android:text="Roommate: Kevin"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
     </RelativeLayout>
 

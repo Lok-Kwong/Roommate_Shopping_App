@@ -6,20 +6,32 @@ public class Item {
     public double cost;
     public boolean purchased;
     public int quantity;
+    public String roommate;
 
     public Item() {
         this.name = null;
         this.cost = 0.00;
         this.purchased = false;
         this.quantity = 0;
+        this.roommate = null;
     }
 
-    public Item(String name, float cost, boolean purchased, int quantity) {
+    public Item(String name) {
+        this.name = name;
+        this.cost = 0.00;
+        this.purchased = false;
+        this.quantity = 0;
+        this.roommate = null;
+    }
+
+    public Item(String name, float cost, boolean purchased, int quantity, String roommate) {
         this.name = name;
         this.cost = cost;
         this.purchased = purchased;
         this.quantity = quantity;
+        this.roommate = roommate;
     }
+
 
     public String getName() {
         return name;
@@ -51,5 +63,13 @@ public class Item {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public String getRoommate() {
+        return roommate;
+    }
+
+    public void setRoommate(String roommate) {
+        this.roommate = roommate;
     }
 }

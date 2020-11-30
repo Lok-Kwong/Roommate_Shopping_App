@@ -24,6 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,10 +34,10 @@ public class ShoppingListRecyclerAdapter extends RecyclerView.Adapter<ShoppingLi
 
     public static final String DEBUG_TAG = "ShopListRecyclerAdapter";
 
-    private List<ShoppingList> shoppingLists;
+    private ArrayList<ShoppingList> shoppingLists;
 
 
-    public ShoppingListRecyclerAdapter(List<ShoppingList> shoppingLists) {
+    public ShoppingListRecyclerAdapter(ArrayList<ShoppingList> shoppingLists) {
         this.shoppingLists = shoppingLists;
     }
 
@@ -57,13 +58,13 @@ public class ShoppingListRecyclerAdapter extends RecyclerView.Adapter<ShoppingLi
             title = (TextView) itemView.findViewById(R.id.shoppingListTitle);
             date = (TextView) itemView.findViewById(R.id.date);
             total = (TextView) itemView.findViewById(R.id.total);
-            delete = (ImageView) itemView.findViewById(R.id.imageView6);
+            delete = (ImageView) itemView.findViewById(R.id.deleteBtn);
             // Clicking the cardview starts the items activity
             cardView = (MaterialCardView) itemView.findViewById(R.id.shoppingCard);
             cardView.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent intent = new Intent( context, ItemsActivity.class );
-                    intent.putExtra("Title", shoppingLists.get(getAdapterPosition()).getShoppingListName());
+                    intent.putExtra("shoppingListObject", shoppingLists.get(getAdapterPosition()));
                     context.startActivity( intent );
 
                     // Add items, add to total
@@ -100,40 +101,29 @@ public class ShoppingListRecyclerAdapter extends RecyclerView.Adapter<ShoppingLi
         public void deleteShoppingList() {
             // query the database to determine the key and remove from firebase database
             final String shoppingTitle = title.getText().toString();
-            DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
-            Query query = myRef.child("ShoppingLists").orderByChild("shoppingListName").equalTo(shoppingTitle);
+            DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("ShoppingLists");
+            myRef.child(shoppingTitle).removeValue()
+                    .addOnSuccessListener( new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Show a quick confirmation
+                            Log.d(DEBUG_TAG, "deleteShoppingList: deleted " + getAdapterPosition());
+                            Toast.makeText(itemView.getContext(), "Deleted " + shoppingTitle, Toast.LENGTH_SHORT).show();
+                            // Hacky solution to dynamically remove cardview in the ShoppingList Activity
+                            ShoppingListActivity.shoppingLists.remove(getAdapterPosition()); // Remove from shopping list
+                            ShoppingListActivity.recyclerAdapter.notifyItemRemoved(getAdapterPosition()); // Notify recycle adapter
 
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                        Log.d(DEBUG_TAG, "deleteShoppingList: in OnDataChange");
-                        postSnapshot.getRef().removeValue()
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        // Show a quick confirmation
-                                        Log.d(DEBUG_TAG, "deleteShoppingList: deleted " + getAdapterPosition());
-                                        Toast.makeText(itemView.getContext(), "Deleted " + shoppingTitle, Toast.LENGTH_SHORT).show();
-                                        // Hacky solution to dynamically remove cardview in the ShoppingList Activity
-                                        ShoppingListActivity.shoppingLists.remove(getAdapterPosition()); // Remove from shopping list
-                                        ShoppingListActivity.recyclerAdapter.notifyItemRemoved(getAdapterPosition()); // Notify recycle adapter
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(Exception e) {
-                                        Log.d(DEBUG_TAG, "deleteShoppingList: cant delete");
-                                        Toast.makeText(itemView.getContext(), "Failed to delete " + shoppingTitle, Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e(DEBUG_TAG, "onCancelled", databaseError.toException());
-                }
-            });
+
+                        }
+                    })
+                    .addOnFailureListener( new OnFailureListener() {
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.d(DEBUG_TAG, "deleteShoppingList: can't delete");
+                            Toast.makeText(itemView.getContext(), "Failed to delete " + shoppingTitle, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
         }
 
 

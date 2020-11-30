@@ -31,8 +31,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class ShoppingListActivity extends AppCompatActivity {
 
@@ -42,7 +44,7 @@ public class ShoppingListActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     public static RecyclerView.Adapter recyclerAdapter;
 
-    public static List<ShoppingList> shoppingLists;
+    public static ArrayList<ShoppingList> shoppingLists;
 
     private FloatingActionButton fabNewPost;
     private AlertDialog.Builder dialogBuilder;
@@ -56,7 +58,7 @@ public class ShoppingListActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_shopping_list);
 
-        recyclerView = (RecyclerView) findViewById( R.id.recyclerView);
+        recyclerView = (RecyclerView) findViewById( R.id.recyclerView );
 
         // use a linear layout manager for the recycler view
         layoutManager = new LinearLayoutManager(this );
@@ -140,16 +142,20 @@ public class ShoppingListActivity extends AppCompatActivity {
 
     public void addShoppingList() {
         Log.d(DEBUG_TAG, "Adding shopping list");
-        String ShoppingListName = listNameView.getText().toString();
-        if (TextUtils.isEmpty(ShoppingListName)) {
+        String shoppingListName = listNameView.getText().toString();
+        if (TextUtils.isEmpty(shoppingListName)) {
             listNameView.setError("Required");
             return;
         }
         String currentDate = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()).format(new Date());
+//        ArrayList<Item> itemList = new ArrayList<Item>();
+//        itemList.add( new Item("Lettuce", 9.99f, false, 2, "Lok"));
+        final ShoppingList shoppingList = new ShoppingList( shoppingListName, currentDate, 0.00);
 
-        final ShoppingList shoppingList = new ShoppingList( ShoppingListName, currentDate, 0.00 );
+        Map<String, Object> stringShoppingListHashMap = new HashMap<>();
+        stringShoppingListHashMap.put(shoppingListName, shoppingList);
 
-        // Add a new element (JobLead) to the list of job leads in Firebase.
+        // Add a new element (shopping list) to the list of shopping lists in Firebase.
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("ShoppingLists");
 
@@ -158,7 +164,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         // list node to store the new job lead.
         // This listener will be invoked asynchronously, as no need for an AsyncTask, as in
         // the previous apps to maintain job leads.
-        myRef.push().setValue( shoppingList )
+        myRef.updateChildren( stringShoppingListHashMap )
                 .addOnSuccessListener( new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
