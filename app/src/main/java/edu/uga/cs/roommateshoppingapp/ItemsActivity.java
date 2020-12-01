@@ -2,7 +2,6 @@ package edu.uga.cs.roommateshoppingapp;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,15 +24,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class ItemsActivity extends AppCompatActivity {
@@ -56,7 +50,7 @@ public class ItemsActivity extends AppCompatActivity {
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
     private EditText itemNameView;
-    private String shoppingTitle;
+    public static String shoppingTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +90,6 @@ public class ItemsActivity extends AppCompatActivity {
 
         // get a Firebase DB instance reference
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("ShoppingLists").child(shoppingTitle).child("Items");
-
-
         itemList = new ArrayList<Item>();
 
         // Set up a listener (event handler) to receive a value for the database reference, but only one time.
@@ -140,7 +132,7 @@ public class ItemsActivity extends AppCompatActivity {
     public void createDialog() {
         dialogBuilder = new AlertDialog.Builder(ItemsActivity.this);
         final View popupView = getLayoutInflater().inflate(R.layout.add_item_popup, null);
-        itemNameView = (EditText) popupView.findViewById( R.id.itemName );
+        itemNameView = (EditText) popupView.findViewById( R.id.itemNameView);
 
         dialogBuilder.setNegativeButton(
                 "cancel",

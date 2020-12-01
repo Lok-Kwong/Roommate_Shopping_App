@@ -23,8 +23,15 @@ public class Item {
         this.quantity = 0;
         this.roommate = null;
     }
+    public Item(String name, double cost, int quantity, String roommate) {
+        this.name = name;
+        this.cost = cost;
+        this.purchased = false;
+        this.quantity = quantity;
+        this.roommate = roommate;
+    }
 
-    public Item(String name, float cost, boolean purchased, int quantity, String roommate) {
+    public Item(String name, double cost, boolean purchased, int quantity, String roommate) {
         this.name = name;
         this.cost = cost;
         this.purchased = purchased;

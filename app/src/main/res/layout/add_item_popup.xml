@@ -34,7 +34,7 @@
         android:textColor="#000000" />
 
     <EditText
-        android:id="@+id/itemName"
+        android:id="@+id/itemNameView"
         android:layout_width="300dp"
         android:layout_height="40dp"
         android:layout_gravity="fill|left"
