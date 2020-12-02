@@ -34,23 +34,31 @@ public class ItemsActivity extends AppCompatActivity {
 
     public static final String DEBUG_TAG = "ItemsActivity";
 
+    // Non-purchased items recyclerview
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     public static RecyclerView.Adapter recyclerAdapter;
 
+    private View divider;
+
+    // Purchased items recyclerview
+    private RecyclerView recyclerView2;
+    private RecyclerView.LayoutManager layoutManager2;
+    public static RecyclerView.Adapter recyclerAdapter2; // Static to update from recycler
+
     private TextView titleView;
-    private Button calculateTotalBtn;
+    private Button calculateTotalBtn; // implement items parceable
     private TextView recentlyPurchasedView;
 
     public static ArrayList<Item> itemList;
+    public static ArrayList<Item> purchasedItemList;
+    public static ArrayList<Item> nonPurchasedItemList;
 
-    private View divider;
-
-    private FloatingActionButton fabNewPost;
+    private FloatingActionButton fabNewPost; // Add item
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
     private EditText itemNameView;
-    public static String shoppingTitle;
+    public static String shoppingTitle; // Static for itemRecycleAdapter to grab title for fb
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +69,17 @@ public class ItemsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         ShoppingList shoppingList = intent.getExtras().getParcelable("shoppingListObject");
 
+        // For non-purchased items
         recyclerView = (RecyclerView) findViewById( R.id.recycleItems );
-
         // use a linear layout manager for the recycler view
         layoutManager = new LinearLayoutManager(this );
         recyclerView.setLayoutManager( layoutManager );
+
+        // For purchased items
+        recyclerView2 = (RecyclerView) findViewById( R.id.recyclerView );
+        // use a linear layout manager for the recycler view
+        layoutManager2 = new LinearLayoutManager(this );
+        recyclerView2.setLayoutManager( layoutManager2 );
 
         // Make recently purchased list
 //      textview.setVisibility(textview.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
@@ -91,6 +105,9 @@ public class ItemsActivity extends AppCompatActivity {
         // get a Firebase DB instance reference
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("ShoppingLists").child(shoppingTitle).child("Items");
         itemList = new ArrayList<Item>();
+        purchasedItemList = new ArrayList<Item>();
+        nonPurchasedItemList = new ArrayList<Item>();
+
 
         // Set up a listener (event handler) to receive a value for the database reference, but only one time.
         // This type of listener is called by Firebase once by immediately executing its onDataChange method.
@@ -111,14 +128,32 @@ public class ItemsActivity extends AppCompatActivity {
                         Log.d( DEBUG_TAG, "No items");
                         break;
                     }
-                    itemList.add(item);
+                    else {
+                        itemList.add(item);
+                    }
+
+                    if(item.isPurchased()) {
+                        purchasedItemList.add(item);
+                    }
+                    else {
+                        nonPurchasedItemList.add(item);
+                    }
                     Log.d( DEBUG_TAG, "ItemsActivity.onCreate(): added: " + item.getName() );
                 }
                 Log.d( DEBUG_TAG, "ItemsActivity.onCreate(): setting recyclerAdapter" );
 
-                // Now, create a JobLeadRecyclerAdapter to populate a ReceyclerView to display the shopping list
-                recyclerAdapter = new ItemsRecyclerAdapter( itemList );
+                Log.d( DEBUG_TAG, "itemList size " + itemList.size());
+                Log.d( DEBUG_TAG, "purchasedItemList size " + purchasedItemList.size());
+                Log.d( DEBUG_TAG, "nonPurchasedItemList size " + nonPurchasedItemList.size());
+
+
+
+                // create a ItemsRecyclerAdapter to populate a ReceyclerView to display the items
+                recyclerAdapter = new ItemsRecyclerAdapter( nonPurchasedItemList );
                 recyclerView.setAdapter( recyclerAdapter );
+                // create a purchased ItemsRecyclerAdapter to populate a ReceyclerView to display the purchased items
+                recyclerAdapter2 = new ItemsRecyclerAdapter( purchasedItemList );
+                recyclerView2.setAdapter( recyclerAdapter2 );
             }
 
             @Override
@@ -184,9 +219,8 @@ public class ItemsActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Item created for " + item.getName(),
                                 Toast.LENGTH_SHORT).show();
                         // update the adapter data
-                        recyclerAdapter.notifyItemInserted(itemList.size());
-
-
+                        nonPurchasedItemList.add(item);
+                        recyclerAdapter.notifyItemInserted(nonPurchasedItemList.size());
                     }
                 })
                 .addOnFailureListener( new OnFailureListener() {
