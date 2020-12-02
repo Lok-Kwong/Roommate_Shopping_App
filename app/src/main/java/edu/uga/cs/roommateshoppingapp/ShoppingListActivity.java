@@ -144,8 +144,6 @@ public class ShoppingListActivity extends AppCompatActivity {
         Log.d(DEBUG_TAG, "Adding shopping list");
         String shoppingListName = listNameView.getText().toString();
         if (TextUtils.isEmpty(shoppingListName)) {
-            listNameView.setError("Please enter the shopping list name");
-            listNameView.requestFocus();
             Toast.makeText( getApplicationContext(), "Shopping list needs a name. Try again. ",
                     Toast.LENGTH_SHORT).show();
             return;

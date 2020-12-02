@@ -164,6 +164,7 @@ public class ItemsActivity extends AppCompatActivity {
 
     }
 
+    // Add item dialog
     public void createDialog() {
         dialogBuilder = new AlertDialog.Builder(ItemsActivity.this);
         final View popupView = getLayoutInflater().inflate(R.layout.add_item_popup, null);
@@ -194,11 +195,13 @@ public class ItemsActivity extends AppCompatActivity {
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
+    // Adds item to itemList and updates the db
     public void addItem() {
         Log.d(DEBUG_TAG, "Adding Item");
         String itemName = itemNameView.getText().toString();
         if (TextUtils.isEmpty(itemName)) {
-            itemNameView.setError("Required");
+            Toast.makeText( getApplicationContext(), "Item needs a name. Try again. ",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
         // Add into specific shopping list

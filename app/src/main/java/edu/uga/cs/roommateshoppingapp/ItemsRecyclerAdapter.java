@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This is an adapter class for the RecyclerView to show all Shopping Lists.
+ * This is an adapter class for the RecyclerView to show all items
  */
 public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdapter.itemListHolder> {
 
     public static final String DEBUG_TAG = "ItemsRecyclerAdapter";
 
-    private List<Item> itemList;
+    private List<Item> itemList; // list of items for two recycle view(either for purchased list or unpurchased list)
 
     public ItemsRecyclerAdapter(List<Item> itemList) {
         this.itemList = itemList;
@@ -74,12 +74,10 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                     cardView.setChecked(!cardView.isChecked());
                     // Is purchased
                     if(cardView.isChecked()) {
-                        // update db then remove from recycle
-                        createDialogPurchase();
+                        createDialogPurchase();  // update db and set as purchased then remove from recycle and add to 2nd recycle adapter
                     }
-                    // Item is unchecked/not purchased
                     else {
-                        setUnpurchased(getAdapterPosition(), itemList.get(getAdapterPosition()).getName());
+                        setUnpurchased(getAdapterPosition(), itemList.get(getAdapterPosition()).getName());  // Item is unchecked/not purchased
                     }
                 }
             });
@@ -93,11 +91,17 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
             // Update item
             edit.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    createDialogEdit();
+                    if(cardView.isChecked()) { // Twe edits
+                        createDialogEdit(); // If checked, add more options to edit
+                    }
+                    else {
+                        createUnpurchasedDialogEdit(); // else, can only edit item name
+                    }
                 }
-            }); // NEED TWO EDITS FOR UNPUR/PUR
+            });
         }
 
+        // Creates a popup for deleting
         public void createDialogDelete() {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
@@ -120,7 +124,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
             dialog.show();
         }
 
-        // DELETE AND EDIT NOT WORKING BC OF ITEMLIST IS SEP
+        // DELETE an item
         public void deleteItem(final int position) {
             // update the database with new itemsList and remove from firebase database
             DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("ShoppingLists").child(ItemsActivity.shoppingTitle);
@@ -163,6 +167,78 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                     });
         }
 
+        // Creates the dialog when clicking edit on an unpurchased item
+        public void createUnpurchasedDialogEdit() {
+            dialogBuilder = new AlertDialog.Builder(context);
+            final View popupView = LayoutInflater.from(context).inflate(R.layout.edit_item_unpurchased_popup, null);
+            listNameView = (EditText) popupView.findViewById( R.id.itemNameView );
+
+            dialogBuilder.setNegativeButton(
+                    "cancel",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }
+            );
+
+            dialogBuilder.setPositiveButton(
+                    "Submit",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Check if valid fields
+                            if ( TextUtils.isEmpty(listNameView.getText().toString()) ) {
+                                Toast.makeText(context, "Please enter an item name. Try again. ",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            String itemName = listNameView.getText().toString();
+                            editItem(getAdapterPosition(), itemName);
+                        }
+                    });
+
+            dialogBuilder.setView(popupView);
+            dialog = dialogBuilder.create();
+            dialog.show();
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        // Edit for unpurchased item
+        public void editItem(final int position, String name) {
+            // update the database with new itemsList and remove from firebase database
+            DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("ShoppingLists").child(ItemsActivity.shoppingTitle);
+
+            Map<String, Object> shoppingListItemUpdate = new HashMap<>();
+            // Create a new item and replace it
+            final Item newItem = new Item(name);
+
+            ItemsActivity.itemList.set(ItemsActivity.itemList.indexOf(itemList.get(position)), newItem); // Replace in main list
+
+            shoppingListItemUpdate.put("Items", ItemsActivity.itemList);
+
+            myRef.updateChildren( shoppingListItemUpdate ) // Update the db with new name
+                    .addOnSuccessListener( new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Show a quick confirmation
+                            Toast.makeText(context, "Item updated",
+                                    Toast.LENGTH_SHORT).show();
+                            ItemsActivity.nonPurchasedItemList.set(position, newItem);
+                            ItemsActivity.recyclerAdapter.notifyItemChanged(position);
+                        }
+                    })
+                    .addOnFailureListener( new OnFailureListener() {
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.d(DEBUG_TAG, "editItem: can't update item");
+                            Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+
+        // Create edit popup for purchased item(more fields to edit)
         public void createDialogEdit() {
             dialogBuilder = new AlertDialog.Builder(context);
             final View popupView = LayoutInflater.from(context).inflate(R.layout.edit_item_popup, null);
@@ -170,6 +246,12 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
             costView = (EditText) popupView.findViewById( R.id.costView );
             quantityView = (EditText) popupView.findViewById( R.id.quantityView );
             roommateView = (EditText) popupView.findViewById( R.id.roommateView );
+
+            // Populate fields with old values
+            listNameView.setText(itemList.get(getAdapterPosition()).getName());
+            costView.setText(String.valueOf(itemList.get(getAdapterPosition()).getCost()));
+            quantityView.setText(String.valueOf(itemList.get(getAdapterPosition()).getQuantity()));
+            roommateView.setText(itemList.get(getAdapterPosition()).getRoommate());
 
             dialogBuilder.setNegativeButton(
                     "cancel",
@@ -222,18 +304,18 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        public void editItem(final int position, String name, double cost,  boolean purchased, int quantity, String roommate) {
+        // Edit for purchased item
+        public void editItem(final int position, String name, double cost, boolean purchased, int quantity, String roommate) {
             // update the database with new itemsList and remove from firebase database
             DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("ShoppingLists").child(ItemsActivity.shoppingTitle);
 
             Map<String, Object> shoppingListItemUpdate = new HashMap<>();
             // Create a new item and replace it
-            Item item = new Item(name, cost, purchased, quantity, roommate);
+            final Item newItem = new Item(name, cost, purchased, quantity, roommate);
 
-            ItemsActivity.itemList.set(ItemsActivity.itemList.indexOf(itemList.get(position)), item);
+            ItemsActivity.itemList.set(ItemsActivity.itemList.indexOf(itemList.get(position)), newItem); // Replace in main list
 
-
-            shoppingListItemUpdate.put("Items", itemList);
+            shoppingListItemUpdate.put("Items", ItemsActivity.itemList);
 
             myRef.updateChildren( shoppingListItemUpdate )
                     .addOnSuccessListener( new OnSuccessListener<Void>() {
@@ -242,7 +324,8 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                             // Show a quick confirmation
                             Toast.makeText(context, "Item updated",
                                     Toast.LENGTH_SHORT).show();
-                            ItemsActivity.recyclerAdapter.notifyItemChanged(position);
+                            ItemsActivity.purchasedItemList.set(position, newItem);
+                            ItemsActivity.recyclerAdapter2.notifyItemChanged(position); // Notify recycleadapter in purchased
                         }
                     })
                     .addOnFailureListener( new OnFailureListener() {
@@ -254,6 +337,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                     });
         }
 
+        // When a cardview is clicked, this popup is created for the user to fill in the cost, quantity, and who bought it
         public void createDialogPurchase() {
             dialogBuilder = new AlertDialog.Builder(context);
             final View popupView = LayoutInflater.from(context).inflate(R.layout.purchase_item_popup, null);
@@ -277,12 +361,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if ( TextUtils.isEmpty(listNameView.getText().toString()) ) {
-                                Toast.makeText(context, "Please enter an item name. Try again. ",
-                                        Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            else if ( TextUtils.isEmpty(roommateView.getText().toString()) ) {
+                            if ( TextUtils.isEmpty(roommateView.getText().toString()) ) {
                                 Toast.makeText(context, "Please enter a roommate name. Try again. ",
                                         Toast.LENGTH_SHORT).show();
                                 return;
@@ -312,6 +391,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
+        // When user submits values of what is checked/purchased then replace item in list with updated item and update children on db
         public void setPurchased(final int position, String name, boolean purchased, double cost, int quantity, String roommate) {
             // update the database with new itemsList and remove from firebase database
             DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("ShoppingLists").child(ItemsActivity.shoppingTitle);
@@ -349,6 +429,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                     });
         }
 
+        // When user unchecks a cardview then remove all values but name and update list/db
         public void setUnpurchased(final int position, String name) {
             // update the database with new itemsList and remove from firebase database
             DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("ShoppingLists").child(ItemsActivity.shoppingTitle);
@@ -357,10 +438,8 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
             // Create a new item and replace it
             final Item item = new Item(name);
 
-
             // update the main item list
             ItemsActivity.itemList.set(ItemsActivity.itemList.indexOf(itemList.get(position)), item);
-
 
             shoppingListItemUpdate.put("Items", ItemsActivity.itemList);
 
@@ -405,8 +484,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
         holder.cost.setText(String.valueOf(item.getName()));
         holder.cost.setText(String.valueOf(item.getCost()) + " x" + String.valueOf(item.getQuantity()));
         if (String.valueOf(item.getRoommate()) == "null") {
-            holder.roommate.setVisibility(View.GONE);
-            holder.edit.setVisibility(View.GONE);
+            holder.roommate.setVisibility(View.GONE); // On creation, don't show who purchased if it hasn't been purchased
         }
         else {
             holder.roommate.setVisibility(View.VISIBLE);
@@ -414,7 +492,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
         }
         if (item.isPurchased()) {
             Log.d(DEBUG_TAG, "item isPurchased: TRUE");
-            holder.cardView.setChecked(true);
+            holder.cardView.setChecked(true); // Set checked initially if item has been purchased
         }
 
     }

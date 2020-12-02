@@ -79,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    // Check form
     private boolean validateForm() {
         boolean result = true;
         if (TextUtils.isEmpty(emailEditText.getText().toString())) {
