@@ -69,9 +69,6 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
 
             // Clicking the cardview means it's purchased - start new dialog for price, quantity
             cardView = (MaterialCardView) itemView.findViewById(R.id.shoppingCard);
-//            if (itemList != null && itemList.get(getAdapterPosition()).isPurchased()) {
-//                cardView.setChecked(true);
-//            }
             cardView.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     cardView.setChecked(!cardView.isChecked());
@@ -98,7 +95,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                 public void onClick(View v) {
                     createDialogEdit();
                 }
-            });
+            }); // NEED TWO EDITS FOR UNPUR/PUR
         }
 
         public void createDialogDelete() {
@@ -155,10 +152,6 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                                 ItemsActivity.nonPurchasedItemList.remove(getAdapterPosition());
                                 ItemsActivity.recyclerAdapter.notifyItemRemoved(position);
                             }
-
-                            Log.d( DEBUG_TAG, "itemList size " + ItemsActivity.itemList.size());
-                            Log.d( DEBUG_TAG, "purchasedItemList size " + ItemsActivity.purchasedItemList.size());
-                            Log.d( DEBUG_TAG, "nonPurchasedItemList size " + ItemsActivity.nonPurchasedItemList.size());
                         }
                     })
                     .addOnFailureListener( new OnFailureListener() {
@@ -193,16 +186,33 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            // Check if valid fields
+                            if ( TextUtils.isEmpty(listNameView.getText().toString()) ) {
+                                Toast.makeText(context, "Please enter an item name. Try again. ",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            else if ( TextUtils.isEmpty(roommateView.getText().toString()) ) {
+                                Toast.makeText(context, "Please enter a roommate name. Try again. ",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            else if ( TextUtils.isEmpty(costView.getText().toString()) ) {
+                                Toast.makeText(context, "Please enter a cost. Try again. ",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            else if ( TextUtils.isEmpty(quantityView.getText().toString()) ) {
+                                Toast.makeText(context, "Please enter a quantity. Try again. ",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
                             String itemName = listNameView.getText().toString();
                             String roommateName = roommateView.getText().toString();
                             double cost = Double.parseDouble(costView.getText().toString());
                             int quantity = Integer.parseInt(quantityView.getText().toString());
-                            // Check if valid fields
-                            if (TextUtils.isEmpty(itemName) || TextUtils.isEmpty(roommateName) || TextUtils.isEmpty(costView.getText().toString()) || TextUtils.isEmpty(quantityView.getText().toString())) {
-                                Toast.makeText(context, "Fill in all the texts!", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            editItem(getAdapterPosition(), itemName, cost, quantity, roommateName);
+                            boolean purchased = itemList.get(getAdapterPosition()).isPurchased();
+                            editItem(getAdapterPosition(), itemName, cost, purchased, quantity, roommateName);
                         }
                     });
 
@@ -212,19 +222,15 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        public void editItem(final int position, String name, double cost, int quantity, String roommate) {
+        public void editItem(final int position, String name, double cost,  boolean purchased, int quantity, String roommate) {
             // update the database with new itemsList and remove from firebase database
             DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("ShoppingLists").child(ItemsActivity.shoppingTitle);
 
             Map<String, Object> shoppingListItemUpdate = new HashMap<>();
             // Create a new item and replace it
-            Item item = new Item(name, cost, quantity, roommate);
-
-
+            Item item = new Item(name, cost, purchased, quantity, roommate);
 
             ItemsActivity.itemList.set(ItemsActivity.itemList.indexOf(itemList.get(position)), item);
-
-
 
 
             shoppingListItemUpdate.put("Items", itemList);
@@ -271,15 +277,31 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            if ( TextUtils.isEmpty(listNameView.getText().toString()) ) {
+                                Toast.makeText(context, "Please enter an item name. Try again. ",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            else if ( TextUtils.isEmpty(roommateView.getText().toString()) ) {
+                                Toast.makeText(context, "Please enter a roommate name. Try again. ",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            else if ( TextUtils.isEmpty(costView.getText().toString()) ) {
+                                Toast.makeText(context, "Please enter a cost. Try again. ",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            else if ( TextUtils.isEmpty(quantityView.getText().toString()) ) {
+                                Toast.makeText(context, "Please enter a quantity. Try again. ",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
                             String itemName = itemList.get(getAdapterPosition()).getName();
                             String roommateName = roommateView.getText().toString();
                             double cost = Double.parseDouble(costView.getText().toString());
                             int quantity = Integer.parseInt(quantityView.getText().toString());
                             // Check if valid fields
-                            if (TextUtils.isEmpty(roommateName) || TextUtils.isEmpty(costView.getText().toString()) || TextUtils.isEmpty(quantityView.getText().toString())) {
-                                Toast.makeText(context, "Fill in all the texts!", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
                             setPurchased(getAdapterPosition(), itemName, true, cost, quantity, roommateName);
                         }
                     });
@@ -298,7 +320,6 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
             // Create a new item and replace it
             final Item item = new Item(name, cost, purchased, quantity, roommate);
             // update the main item list
-            Log.d(DEBUG_TAG, "setPurchased: pos " + position);
             ItemsActivity.itemList.set(ItemsActivity.itemList.indexOf(itemList.get(position)), item); // Index in overarching items is different from index in unpurchased itemList
 
             shoppingListItemUpdate.put("Items",  ItemsActivity.itemList);
@@ -310,10 +331,12 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                             // Show a quick confirmation
                             Toast.makeText(context, "Item moved to purchased",
                                     Toast.LENGTH_SHORT).show();
+                            cardView.setChecked(!cardView.isChecked());
                             ItemsActivity.purchasedItemList.add(item);
                             ItemsActivity.nonPurchasedItemList.remove(getAdapterPosition());
                             ItemsActivity.recyclerAdapter.notifyItemRemoved(getAdapterPosition());
                             ItemsActivity.recyclerAdapter2.notifyItemInserted(ItemsActivity.purchasedItemList.size());
+                            Log.d(DEBUG_TAG, "NONPURCHASED LIST SIZE: " +  itemList.size());
 
                         }
                     })
@@ -348,10 +371,13 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
                             // Show a quick confirmation
                             Toast.makeText(context, "Item moved to unpurchased",
                                     Toast.LENGTH_SHORT).show();
+                            cardView.setChecked(!cardView.isChecked());
                             ItemsActivity.nonPurchasedItemList.add(item); // Add item to other list
                             ItemsActivity.purchasedItemList.remove(getAdapterPosition()); // Remove from current list
                             ItemsActivity.recyclerAdapter2.notifyItemRemoved(getAdapterPosition()); // Notify respective adapters
                             ItemsActivity.recyclerAdapter.notifyItemInserted(ItemsActivity.nonPurchasedItemList.size());
+                            Log.d(DEBUG_TAG, "PURCHASED LIST SIZE: " +  itemList.size());
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -380,12 +406,16 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
         holder.cost.setText(String.valueOf(item.getCost()) + " x" + String.valueOf(item.getQuantity()));
         if (String.valueOf(item.getRoommate()) == "null") {
             holder.roommate.setVisibility(View.GONE);
+            holder.edit.setVisibility(View.GONE);
         }
         else {
             holder.roommate.setVisibility(View.VISIBLE);
             holder.roommate.setText(String.valueOf(item.getRoommate()));
         }
-
+        if (item.isPurchased()) {
+            Log.d(DEBUG_TAG, "item isPurchased: TRUE");
+            holder.cardView.setChecked(true);
+        }
 
     }
 
