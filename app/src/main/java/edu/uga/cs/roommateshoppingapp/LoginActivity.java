@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -39,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         LoginButton = (Button) findViewById( R.id.registerButton);
         LoginButton.setOnClickListener( new LoginButtonClickListener() );
 
-        // Check if user is signed in and if signed in, sign the user out before proceeding.
+        // Check if user is signeds in and if signed in, sign the user out before proceeding.
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
@@ -111,8 +112,9 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent( LoginActivity.this, RegisterActivity.class );
             startActivity( intent );
         } else if (i == R.id.forgetText) {
-//            Intent intent = new Intent(v.getContext(), ForgetActivty.class);
-//            v.getContext().startActivity(intent);
+            Intent intent = new Intent( LoginActivity.this, ForgetActivity.class );
+            //intent.putExtra("firebase", (Parcelable) mAuth);
+            startActivity(intent);
         }
     }
 

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ForgetActivity">
+
+    <EditText
+        android:id="@+id/emailForgot"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:layout_gravity="fill"
+        android:baselineAligned="false"
+        android:ems="10"
+        android:fontFamily="Roboto"
+        android:hint="Enter email"
+        android:inputType="textEmailAddress"
+        android:shadowColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.441"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.765" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="337dp"
+        android:layout_height="293dp"
+        android:layout_marginTop="96dp"
+        app:layout_constraintBottom_toTopOf="@+id/emailForgot"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.231"
+        app:srcCompat="@drawable/keys" />
+
+    <TextView
+        android:id="@+id/textview12"
+        android:layout_width="194dp"
+        android:layout_height="44dp"
+        android:text="Forgot Password?"
+        android:gravity="center"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/forgotButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailForgot" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

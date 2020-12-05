@@ -108,6 +108,7 @@ public class ItemsActivity extends AppCompatActivity {
         purchasedItemList = new ArrayList<Item>();
         nonPurchasedItemList = new ArrayList<Item>();
 
+        calculateTotalBtn = findViewById(R.id.calculateBtn);
 
         // Set up a listener (event handler) to receive a value for the database reference, but only one time.
         // This type of listener is called by Firebase once by immediately executing its onDataChange method.
