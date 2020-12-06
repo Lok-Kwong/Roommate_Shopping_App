@@ -1,12 +1,14 @@
 package edu.uga.cs.roommateshoppingapp;
 
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.RequiresApi;
 
 import java.util.Objects;
 
-public class Item {
+public class Item implements Parcelable {
 
     public String name;
     public double cost;
@@ -45,7 +47,42 @@ public class Item {
         this.roommate = roommate;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    protected Item(Parcel in) {
+        name = in.readString();
+        cost = in.readDouble();
+        purchased = in.readBoolean();
+        quantity = in.readInt();
+        roommate = in.readString();
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeDouble(cost);
+        dest.writeBoolean(purchased);
+        dest.writeInt(quantity);
+        dest.writeString(roommate);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Item> CREATOR = new Creator<Item>() {
+        @RequiresApi(api = Build.VERSION_CODES.Q)
+        @Override
+        public Item createFromParcel(Parcel parcel) {
+            return new Item(parcel);
+        }
+
+        @Override
+        public Item[] newArray(int size) {
+            return new Item[size];
+        }
+    };
     public String getName() {
         return name;
     }
