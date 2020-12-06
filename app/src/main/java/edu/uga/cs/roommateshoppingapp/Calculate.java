@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,41 +69,56 @@ public class Calculate extends AppCompatActivity {
 
         if (purchasedList.size() > 0) {
             temp = purchasedList.get(0).getRoommate();
-            //users[0] = temp;
-            // First user stored in array
+            for (int i = 0; i < purchasedList.size(); i++) {
+                totalCost += purchasedList.get(i).getCost() * purchasedList.get(i).getQuantity();
+            }
+            totalCostString += "Total Cost for All Users: $" + totalCost;
+
+            totalCostView.setText(totalCostString);
+            //mainView.setText(mainString);
+            // Count how many different users there are in the list
+            for (int i = 0; i < purchasedList.size(); i++) {
+                users[i] = purchasedList.get(i).getRoommate();
+            }
+
+            // Array contains the unique users
+            String [] uniqueUsers = new HashSet<String>(Arrays.asList(users)).toArray(new String[0]);
+
+            Double [] pay = new Double[uniqueUsers.length];
+            Double average = totalCost / (uniqueUsers.length - 1);
+            Double temp = 0.0;
+            String owe = "";
+            DecimalFormat df = new DecimalFormat( "####0.00" );
+            pay[0] = 0.0;
+            Log.d(DEBUG_TAG, "Length of purchasedList array: " + purchasedList.size());
+            for (int i = 1; i < uniqueUsers.length; i++) {
+                Log.d(DEBUG_TAG, purchasedList.get(i).getRoommate());
+                mainString += uniqueUsers[i] + "\n";
+                for (int k = 0; k < purchasedList.size(); k++) {
+                    if (uniqueUsers[i].equals(purchasedList.get(k).getRoommate())) {
+                        indTotalCost += purchasedList.get(k).getCost() * purchasedList.get(k).getQuantity();
+                    }
+                }
+                pay[i] = indTotalCost;
+
+                if (i == uniqueUsers.length - 1) {
+                    Log.d(DEBUG_TAG, "HERE: " + pay[0] + " "  + pay[1] + " " + pay[2]);
+                    if (pay[1] < pay[2]) {
+                        temp = average - pay[1];
+                        owe += uniqueUsers[1] + " owes " + uniqueUsers[2] + " $" + df.format(temp) + "\n\n";
+                    } else if (pay[2] < pay[1]) {
+                        temp = average - pay[2];
+                        owe += uniqueUsers[2] + " owes " + uniqueUsers[1] + " $" + df.format(temp) + "\n\n";
+                    }
+                }
+                mainString += "Has spent: $" + df.format(indTotalCost) + " out of $" + df.format(totalCost) + "\n\n" + owe;
+
+                indTotalCost = 0;
+            }
+            mainView.setText(mainString);
         } else {
             Log.d( DEBUG_TAG, "No items purchased");
         }
-
-        for (int i = 0; i < purchasedList.size(); i++) {
-            totalCost += purchasedList.get(i).getCost() * purchasedList.get(i).getQuantity();
-        }
-        totalCostString += "Total Cost for All Users: $" + totalCost;
-
-        totalCostView.setText(totalCostString);
-        //mainView.setText(mainString);
-        // Count how many different users there are in the list
-        for (int i = 0; i < purchasedList.size(); i++) {
-            users[i] = purchasedList.get(i).getRoommate();
-        }
-
-        // Array contains the unique users
-        String [] uniqueUsers = new HashSet<String>(Arrays.asList(users)).toArray(new String[0]);
-
-        Log.d(DEBUG_TAG, "Length of purchasedList array: " + purchasedList.size());
-        for (int i = 1; i < uniqueUsers.length; i++) {
-            Log.d(DEBUG_TAG, purchasedList.get(i).getRoommate());
-            mainString += uniqueUsers[i] + "\n";
-            for (int k = 0; k < purchasedList.size(); k++) {
-                if (uniqueUsers[i].equals(purchasedList.get(k).getRoommate())) {
-                    indTotalCost += purchasedList.get(k).getCost() * purchasedList.get(k).getQuantity();
-                }
-            }
-            mainString += "Has spent: $" + indTotalCost + " out of $" + totalCost + "\n\n\n";
-            indTotalCost = 0;
-        }
-        Log.d(DEBUG_TAG, "mainString");
-        mainView.setText(mainString);
 
         // Update the total in firebase
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("ShoppingLists").child(shoppingList.getShoppingListName());
