@@ -43,6 +43,8 @@ public class Calculate extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculate);
 
+        DecimalFormat df = new DecimalFormat( "####0.00" );
+
         Intent intent = getIntent();
         ArrayList<Item> purchasedList = intent.getExtras().getParcelableArrayList("purchasedItemList");
         ArrayList<Item> nonPurchasedList = intent.getExtras().getParcelableArrayList("nonPurchasedItemList");
@@ -60,7 +62,6 @@ public class Calculate extends AppCompatActivity {
         });
 
         Log.d( DEBUG_TAG, "purchasedItemList size " + purchasedList.size());
-        Log.d( DEBUG_TAG, "nonPurchasedItemList size " + nonPurchasedList.size());
 
         mainString = "";
         totalCostString = "";
@@ -72,7 +73,7 @@ public class Calculate extends AppCompatActivity {
             for (int i = 0; i < purchasedList.size(); i++) {
                 totalCost += purchasedList.get(i).getCost() * purchasedList.get(i).getQuantity();
             }
-            totalCostString += "Total Cost for All Users: $" + totalCost;
+            totalCostString += "Total Cost for All Users: $" + df.format(totalCost);
 
             totalCostView.setText(totalCostString);
             //mainView.setText(mainString);
@@ -88,7 +89,7 @@ public class Calculate extends AppCompatActivity {
             Double average = totalCost / (uniqueUsers.length - 1);
             Double temp = 0.0;
             String owe = "";
-            DecimalFormat df = new DecimalFormat( "####0.00" );
+
             pay[0] = 0.0;
             Log.d(DEBUG_TAG, "Length of purchasedList array: " + purchasedList.size());
             for (int i = 1; i < uniqueUsers.length; i++) {
