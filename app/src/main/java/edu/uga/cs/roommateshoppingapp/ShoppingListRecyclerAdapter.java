@@ -144,7 +144,7 @@ public class ShoppingListRecyclerAdapter extends RecyclerView.Adapter<ShoppingLi
 
         holder.title.setText(String.valueOf(shoppingList.getShoppingListName()));
         holder.date.setText(String.valueOf(shoppingList.getDate()));
-        holder.total.setText(String.valueOf(shoppingList.getTotal()));
+        holder.total.setText("$" + String.valueOf(shoppingList.getTotal()));
     }
 
     @Override

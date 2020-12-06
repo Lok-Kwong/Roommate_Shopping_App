@@ -70,7 +70,7 @@ public class ItemsActivity extends AppCompatActivity {
 
         // Get Shopping List object for future use
         Intent intent = getIntent();
-        ShoppingList shoppingList = intent.getExtras().getParcelable("shoppingListObject");
+        final ShoppingList shoppingList = intent.getExtras().getParcelable("shoppingListObject");
 
         // For non-purchased items
         recyclerView = (RecyclerView) findViewById( R.id.recycleItems );
@@ -85,11 +85,8 @@ public class ItemsActivity extends AppCompatActivity {
         recyclerView2.setLayoutManager( layoutManager2 );
 
         // Make recently purchased list
-//      textview.setVisibility(textview.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
         recentlyPurchasedView = (TextView) findViewById(R.id.textView6);
-//        recentlyPurchasedView.setVisibility(View.GONE);
         divider = (View) findViewById(R.id.divider);
-//        divider.setVisibility(View.GONE);
 
         // Set Title of shopping list
         titleView = (TextView) findViewById(R.id.textView5);
@@ -117,6 +114,8 @@ public class ItemsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), Calculate.class);
+//                shoppingList.setItems(itemList);
+                intent.putExtra("shoppingList", shoppingList);
                 intent.putExtra("purchasedItemList", purchasedItemList);
                 intent.putExtra("nonPurchasedItemList", nonPurchasedItemList);
                 startActivity(intent);

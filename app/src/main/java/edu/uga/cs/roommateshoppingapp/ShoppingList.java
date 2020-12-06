@@ -37,7 +37,7 @@ public class ShoppingList implements Parcelable {
         shoppingListName = in.readString();
         date = in.readString();
         total = in.readDouble();
-        items = in.readArrayList(null);
+        items = in.readArrayList(getClass().getClassLoader());
     }
 
     @Override

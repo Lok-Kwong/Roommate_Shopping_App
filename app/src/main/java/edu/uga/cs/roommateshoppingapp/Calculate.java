@@ -8,10 +8,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public class Calculate extends AppCompatActivity {
 
@@ -24,6 +32,7 @@ public class Calculate extends AppCompatActivity {
     public double totalCost;
     public double indTotalCost;
     public String totalCostString;
+    public ShoppingList shoppingList;
 
     public TextView totalCostView;
     public TextView mainView;
@@ -36,6 +45,7 @@ public class Calculate extends AppCompatActivity {
         Intent intent = getIntent();
         ArrayList<Item> purchasedList = intent.getExtras().getParcelableArrayList("purchasedItemList");
         ArrayList<Item> nonPurchasedList = intent.getExtras().getParcelableArrayList("nonPurchasedItemList");
+        shoppingList = intent.getExtras().getParcelable("shoppingList"); // Grab for updating total in firebase
 
         mainView = findViewById(R.id.main);
         totalCostView = findViewById(R.id.TotalCost);
@@ -93,6 +103,26 @@ public class Calculate extends AppCompatActivity {
         }
         Log.d(DEBUG_TAG, "mainString");
         mainView.setText(mainString);
+
+        // Update the total in firebase
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("ShoppingLists").child(shoppingList.getShoppingListName());
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("total", totalCost);
+
+        myRef.updateChildren( updates )
+                .addOnSuccessListener( new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Show a quick confirmation
+                        Log.d(DEBUG_TAG, "Calculated: " + shoppingList.getTotal());
+                    }
+                })
+                .addOnFailureListener( new OnFailureListener() {
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.d(DEBUG_TAG, "Can't calculate total ");
+                    }
+                });
 
 
     }

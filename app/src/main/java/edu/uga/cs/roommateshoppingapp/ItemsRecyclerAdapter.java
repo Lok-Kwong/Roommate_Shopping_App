@@ -132,7 +132,6 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
 
             Map<String, Object> shoppingListItemUpdate = new HashMap<>();
 
-
             // Remove from list and update on firebase
             ItemsActivity.itemList.remove(ItemsActivity.itemList.indexOf(itemList.get(position))); // Find and remove element from overarching itemlist based on item to be deleted in sublist(purchased/unpurchased)
 
