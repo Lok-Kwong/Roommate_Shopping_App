@@ -88,7 +88,7 @@ public class Calculate extends AppCompatActivity {
                     indTotalCost += purchasedList.get(k).getCost() * purchasedList.get(k).getQuantity();
                 }
             }
-            mainString += "Total cost for this user: $" + indTotalCost + "\n\n\n";
+            mainString += "Has spent: $" + indTotalCost + " out of $" + totalCost + "\n\n\n";
             indTotalCost = 0;
         }
         Log.d(DEBUG_TAG, "mainString");
