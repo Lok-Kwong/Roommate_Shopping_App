@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+/**
+    This calculates the total cost and how much roommates owe each other and displays it.
+ */
 public class Calculate extends AppCompatActivity {
 
     public static final String DEBUG_TAG = "Calculate Activity";

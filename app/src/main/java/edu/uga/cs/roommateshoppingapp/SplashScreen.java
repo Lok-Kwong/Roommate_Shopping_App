@@ -7,6 +7,9 @@ import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * This is the splash screen(when the app is started).
+ */
 public class SplashScreen extends AppCompatActivity {
 
     @Override

@@ -36,6 +36,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+
+/**
+ * This is the shopping list activity, shows all of the shopping list, allows user to edit(add, delete) shopping list.
+ */
 public class ShoppingListActivity extends AppCompatActivity {
 
     public static final String DEBUG_TAG = "ShoppingListActivity";

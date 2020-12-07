@@ -19,6 +19,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * This is the login screen for the app. Allows the user to login with an existing email and password in database.
+ */
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "SignInActivity";

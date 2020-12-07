@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This is an adapter class for the RecyclerView to show all items
+ * This is an adapter class for the RecyclerView to show all items.
  */
 public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdapter.itemListHolder> {
 
