@@ -33,6 +33,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The Item's Activity, shows all of the items that have been unpurchased and purchased.
+ * Allows the user to edit,purchase,unpurchase items.
+ */
 public class ItemsActivity extends AppCompatActivity {
 
     public static final String DEBUG_TAG = "ItemsActivity";

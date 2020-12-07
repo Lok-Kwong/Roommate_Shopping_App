@@ -16,6 +16,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * This lets the user reset their password if they forget it.
+ */
 public class ForgetActivity extends AppCompatActivity {
 
     private String email;
@@ -41,6 +44,7 @@ public class ForgetActivity extends AppCompatActivity {
 
                 String email = emailText.getText().toString().trim();
 
+                // Sends user an email to reset password.
                 if (TextUtils.isEmpty(email)) {
                     Toast.makeText(getApplicationContext(), "Enter your email!", Toast.LENGTH_SHORT).show();
                     return;

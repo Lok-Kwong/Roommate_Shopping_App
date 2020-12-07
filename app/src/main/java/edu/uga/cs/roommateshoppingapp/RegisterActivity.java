@@ -19,6 +19,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 
+/**
+ * This is the register activity. Allows user to register for an account using an email, username and password.
+ */
 public class RegisterActivity extends AppCompatActivity {
 
     private static final String DEBUG_TAG = "RegisterActivity";
