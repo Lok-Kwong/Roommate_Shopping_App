@@ -93,7 +93,6 @@ public class Calculate extends AppCompatActivity {
             pay[0] = 0.0;
             Log.d(DEBUG_TAG, "Length of purchasedList array: " + purchasedList.size());
             for (int i = 1; i < uniqueUsers.length; i++) {
-                Log.d(DEBUG_TAG, purchasedList.get(i).getRoommate());
                 mainString += uniqueUsers[i] + "\n";
                 for (int k = 0; k < purchasedList.size(); k++) {
                     if (uniqueUsers[i].equals(purchasedList.get(k).getRoommate())) {
